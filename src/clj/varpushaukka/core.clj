@@ -47,7 +47,8 @@
 (defn find-master
   [keyring pub-key keys]
   (some #(let [master-key (keyring/get-public-key keyring %)]
-           (and (or (key= pub-key master-key) (is-subkey-of? pub-key master-key))
+           (and master-key
+                (or (key= pub-key master-key) (is-subkey-of? pub-key master-key))
                 master-key))
         keys))
 
@@ -58,12 +59,12 @@
   [artifacts keys]
   (let [[jar-file asc-file] (map (comp :file meta) artifacts)
         keyring (load-keyring)
-        signature (first (pgp/decode-signatures (io/file asc-file)))
-        pub-key (keyring/get-public-key keyring (pgp/key-id signature))
-        master-key (find-master keyring pub-key keys)]
-    (and master-key
-         (pgp-sig/verify (io/file jar-file) signature pub-key)
-         master-key)))
+        signature (first (pgp/decode-signatures (io/file asc-file)))]
+    (when-let [pub-key (keyring/get-public-key keyring (pgp/key-id signature))]
+      (let [master-key (find-master keyring pub-key keys)]
+        (and master-key
+             (pgp-sig/verify (io/file jar-file) signature pub-key)
+             master-key)))))
 
 (defn check-package
   [package keyspec]
