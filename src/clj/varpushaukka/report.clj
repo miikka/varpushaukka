@@ -56,15 +56,24 @@
   [user-id]
   (first (string/split user-id #"<")))
 
+(defn sort-packages [package-status] (sort-by :package package-status))
+
+(defn get-user-id
+  [package]
+  (some->> (get-in package [:signed-by :user-ids])
+           (map strip-email)
+           (some #(and (not (string/blank? %)) %))
+           (string/trim)))
+
 (defn package-table
   [package-status]
   [:table
-   (for [package package-status]
+   (for [package (sort-packages package-status)]
      [:tr {:style (if (= :untrusted (:status package)) "color: red" "")}
       [:td (:package package)]
       [:td (:version package)]
       [:td (:status package)]
-      [:td (strip-email (get-in package [:signed-by :user-ids 0] "-"))]])])
+      [:td (get-user-id package)]])])
 
 (defn pprint-report
   [package-status]
