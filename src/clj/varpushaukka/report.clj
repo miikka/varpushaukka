@@ -12,7 +12,8 @@
    :tommi "CE5BB16BACD86273DDCCF4EDF0CF4EB328DB8A2C"
    :dakrone "6CA9E3B29F28FEA86750B6BE9D6465D43ACECAE0"
    :weavejester "BADEB0BCBB5010BB9F4FF46A87FCFC781A1B513D"
-   :juho "5DDBC3343CEC9A95AB0272C9094224808950366D"})
+   :juho "5DDBC3343CEC9A95AB0272C9094224808950366D"
+   :danlentz "2C3F427B0CA72D7DA254B66A5C1BFB40B110BC3D"})
 
 (def trusted-groups
   {:metosin #{:miikka :tommi :juho}})
@@ -23,8 +24,14 @@
    "metosin/scjsv"             {:group :metosin}
    "metosin/vega-tools"        {:group :metosin}
    "metosin/loiste"            {:group :metosin}
+   "metosin/potpuri"           {:group :metosin}
+   "metosin/schema-tools"      {:group :metosin}
+   "metosin/metosin-common"    {:group :metosin}
+   "metosin/boot-alt-test"     {:group :metosin}
+   "metosin/compojure-api"     {:group :metosin}
    "clj-http"                  :dakrone
    "hiccup"                    :weavejester
+   "danlentz/clj-uuid"         :danlentz
    "mvxcvi/clj-pgp"            :no-key})
 
 (defn keys-for-keyspec
