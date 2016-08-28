@@ -12,12 +12,6 @@
 (def trusted-keys
   {:miikka "0753C3DA748EDA91AAB1E35E8005E0EBBCB7E306"})
 
-(def packages
-  ["metosin/kekkonen"
-   "metosin/ring-swagger"
-   "metosin/scjsv"
-   "metosin/vega-tools"])
-
 (def local-repo "m2")
 
 (def repositories
@@ -47,20 +41,32 @@
                               :repositories repositories)))
 
 (defn is-subkey-of?
-  [keyring sub-key master-key]
+  [sub-key master-key]
   (let [master-id (pgp/key-id master-key)]
     (some #(= (pgp/key-id %) master-id) (iterator-seq (.getSignatures sub-key)))))
 
+(defn key= [key1 key2] (= (pgp/key-id key1) (pgp/key-id key2)))
+
+(defn find-master
+  [keyring pub-key keys]
+  (some #(let [master-key (keyring/get-public-key keyring %)]
+           (and (or (key= pub-key master-key) (is-subkey-of? pub-key master-key))
+                master-key))
+        keys))
+
+(defn load-keyring []
+  (keyring/load-public-keyring (io/file keyring-path)))
+
 (defn check-artifact
-  [artifacts keyspec]
+  [artifacts keys]
   (let [[jar-file asc-file] (map (comp :file meta) artifacts)
-        keyring (keyring/load-public-keyring (io/file keyring-path))
+        keyring (load-keyring)
         signature (first (pgp/decode-signatures (io/file asc-file)))
         pub-key (keyring/get-public-key keyring (pgp/key-id signature))
-        master-key (keyring/get-public-key keyring (get trusted-keys keyspec))]
-    (and (or (= (pgp/key-id pub-key) (pgp/key-id master-key))
-             (is-subkey-of? keyring pub-key master-key))
-         (pgp-sig/verify (io/file jar-file) signature pub-key))))
+        master-key (find-master keyring pub-key keys)]
+    (and master-key
+         (pgp-sig/verify (io/file jar-file) signature pub-key)
+         master-key)))
 
 (defn check-package
   [package keyspec]
