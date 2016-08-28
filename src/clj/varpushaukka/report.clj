@@ -1,8 +1,11 @@
 (ns varpushaukka.report
   (:require [clj-pgp.core :as pgp]
+            [clj-time.core :as t]
             [hiccup.core :as hiccup]
+            [hiccup.page :refer [html5]]
             [varpushaukka.core :as core]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clj-uuid :as uuid]))
 
 (def trusted-keys
   {:miikka "0753C3DA748EDA91AAB1E35E8005E0EBBCB7E306"
@@ -46,19 +49,44 @@
   [user-id]
   (first (string/split user-id #"<")))
 
+(defn package-table
+  [package-status]
+  [:table
+   (for [package package-status]
+     [:tr
+      [:td (:package package)]
+      [:td (:version package)]
+      [:td (:status package)]
+      [:td (strip-email (get-in package [:signed-by :user-ids 0] "-"))]])])
+
 (defn pprint-report
   [package-status]
-  (hiccup/html
-   [:html
-    [:head [:title "package signature status report"]]
-    [:body
-     [:h1 "package signature status report"]
-     [:table
-      (for [package package-status]
-        [:tr
-         [:td (:package package)]
-         [:td (:version package)]
-         [:td (:status package)]
-         [:td (strip-email (get-in package [:signed-by :user-ids 0] "-"))]])]]]))
+  (html5
+   [:head [:title "package signature status report"]]
+   [:body
+    [:h1 "package signature status report"]
+    (package-table package-status)]))
 
-(defn -main [] (println (pprint-report (check-packages))))
+(def feed-id
+  "urn:uuid:fd788648-c061-4e26-afb0-3b00279f5a7a")
+
+(defn pprint-atom
+  [package-status]
+  (let [now (str (t/now))]
+    (hiccup/html
+     {:mode :xml}
+     [:feed {:xmlns "http://www.w3.org/2005/Atom"}
+      [:title "package signature status report"]
+      [:updated now]
+      [:id feed-id]
+      [:entry
+       [:title (str "report for " now)]
+       [:id (str "urn:uuid:" (uuid/v4))]
+       [:updated now]
+       [:content {:type "xhtml"}
+        [:div {:xmlns "http://www.w3.org/1999/xhtml"}
+         (package-table package-status)]]
+       [:author
+        [:name "varpushaukka"]]]])))
+
+(defn -main [] (println (pprint-atom (check-packages))))
