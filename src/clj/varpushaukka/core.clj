@@ -10,7 +10,7 @@
    [clj-pgp.core :as pgp]))
 
 (def local-repo "m2")
-(def keyring-path "/Users/miikka/.gnupg/pubring.gpg")
+(def keyring-path (str (System/getProperty "user.home") "/.gnupg/pubring.gpg"))
 
 (def repositories
   {"central" "https://repo1.maven.org/maven2/"
@@ -36,12 +36,13 @@
                               :local-repo local-repo
                               :repositories repositories)))
 
+;; XXX(miikka) If I understand this correctly, this is comparing 64-bit key IDs,
+;; which is not secure.
+(defn key= [key1 key2] (= (pgp/key-id key1) (pgp/key-id key2)))
+
 (defn is-subkey-of?
   [sub-key master-key]
-  (let [master-id (pgp/key-id master-key)]
-    (some #(= (pgp/key-id %) master-id) (iterator-seq (.getSignatures sub-key)))))
-
-(defn key= [key1 key2] (= (pgp/key-id key1) (pgp/key-id key2)))
+  (some #(key= % master-key) (iterator-seq (.getSignatures sub-key))))
 
 (defn find-master
   [keyring pub-key keys]
