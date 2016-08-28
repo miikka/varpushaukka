@@ -9,16 +9,12 @@
    [clj-pgp.keyring :as keyring]
    [clj-pgp.core :as pgp]))
 
-(def trusted-keys
-  {:miikka "0753C3DA748EDA91AAB1E35E8005E0EBBCB7E306"})
-
 (def local-repo "m2")
+(def keyring-path "/Users/miikka/.gnupg/pubring.gpg")
 
 (def repositories
-  {"central" "http://repo1.maven.org/maven2/"
+  {"central" "https://repo1.maven.org/maven2/"
    "clojars" "https://clojars.org/repo/"})
-
-(def keyring-path "/Users/miikka/.gnupg/pubring.gpg")
 
 (defn get-package-info
   [package]
