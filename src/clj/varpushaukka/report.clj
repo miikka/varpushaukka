@@ -60,7 +60,7 @@
   [package-status]
   [:table
    (for [package package-status]
-     [:tr
+     [:tr {:style (if (= :untrusted (:status package)) "color: red" "")}
       [:td (:package package)]
       [:td (:version package)]
       [:td (:status package)]
