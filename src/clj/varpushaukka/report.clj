@@ -13,10 +13,11 @@
    :dakrone "6CA9E3B29F28FEA86750B6BE9D6465D43ACECAE0"
    :weavejester "BADEB0BCBB5010BB9F4FF46A87FCFC781A1B513D"
    :juho "5DDBC3343CEC9A95AB0272C9094224808950366D"
+   :john "7A3B4BAFCACB8A4A79C6BF760D6F7DAC0EEE5E66"
    :danlentz "2C3F427B0CA72D7DA254B66A5C1BFB40B110BC3D"})
 
 (def trusted-groups
-  {:metosin #{:miikka :tommi :juho}})
+  {:metosin #{:miikka :tommi :juho :john}})
 
 (def packages
   {"metosin/kekkonen"          {:group :metosin}
