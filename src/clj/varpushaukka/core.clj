@@ -72,7 +72,7 @@
           ;; XXX(miikka) Status should be :revoked if master-key is revoked.
           {:status (if trusted :trusted :untrusted) :pub-key master-key})
         {:status :unknown-key :key-id (pgp/hex-id signature)})
-      {:status :unsigned})))
+      {:status :broken-signature})))
 
 (defn check-package
   [package keyspec]
