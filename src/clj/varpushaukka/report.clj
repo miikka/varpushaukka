@@ -99,7 +99,7 @@
                     #{:trusted :no-keys-specified} ""
                     #{:not-signed} "color: darkorange"
                     "color: red")}
-      [:td (:package package)]
+      [:td (str (:package package))]
       [:td (:version package)]
       [:td (:status package)]
       [:td (get-user-id package)]])])
