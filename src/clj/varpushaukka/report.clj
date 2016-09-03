@@ -4,6 +4,7 @@
             [hiccup.core :as hiccup]
             [hiccup.page :refer [html5]]
             [varpushaukka.core :as core]
+            [varpushaukka.clojars :as clojars]
             [clojure.string :as string]
             [clj-uuid :as uuid]))
 
@@ -20,20 +21,13 @@
   {:metosin #{:miikka :tommi :juho :john}})
 
 (def packages
-  {"metosin/kekkonen"          {:group :metosin}
-   "metosin/ring-swagger"      {:group :metosin}
-   "metosin/scjsv"             {:group :metosin}
-   "metosin/vega-tools"        {:group :metosin}
-   "metosin/loiste"            {:group :metosin}
-   "metosin/potpuri"           {:group :metosin}
-   "metosin/schema-tools"      {:group :metosin}
-   "metosin/metosin-common"    {:group :metosin}
-   "metosin/boot-alt-test"     {:group :metosin}
-   "metosin/compojure-api"     {:group :metosin}
-   "clj-http"                  :dakrone
+  {"clj-http"                  :dakrone
    "hiccup"                    :weavejester
    "danlentz/clj-uuid"         :danlentz
    "mvxcvi/clj-pgp"            :no-key})
+
+(def groups
+  {"metosin" {:group :metosin}})
 
 (defn keys-for-keyspec
   [keyspec]
@@ -41,17 +35,45 @@
     (map trusted-keys (get trusted-groups (:group keyspec)))
     (when-let [key (get trusted-keys keyspec)] [key])))
 
-(defn check-packages
-  []
-  (for [[package keyspec] packages]
+(defn check-coordinates
+  [coordinates keyspec]
+  (let [package (first coordinates)]
     (if-let [keys (keys-for-keyspec keyspec)]
-      (let [artifact (core/get-artifact package)
-            pub-key (core/check-artifact artifact keys)]
-        {:package package
-         :version (second (first artifact))
-         :status (if pub-key :trusted :untrusted)
-         :signed-by (when pub-key (pgp/key-info pub-key))})
+      (if-let [artifact (core/get-artifact coordinates)]
+        (let [{:keys [status pub-key key-id]} (core/check-artifact artifact keys)]
+          (merge
+           {:package package
+            :version (second (first artifact))
+            :status status}
+           (when pub-key {:signed-by (pgp/key-info pub-key)})
+           (when key-id {:signed-by-id key-id})))
+        {:package package :status :not-signed})
       {:package package :status :no-keys-specified})))
+
+(defn check-group
+  [group keyspec]
+  (for [package (clojars/get-group-artifacts group)]
+    (-> package
+        (clojars/package->coordinates)
+        (check-coordinates keyspec))))
+
+(defn check-watched-group
+  [group]
+  (check-group group (get groups group)))
+
+(defn check-groups [] (mapcat (partial apply check-group) groups))
+
+(defn check-package
+  [package keyspec]
+  (check-coordinates (clojars/get-coordinates package) keyspec))
+
+(defn check-packages [] (map (partial apply check-package) packages))
+
+(defn check-all
+  []
+  (concat
+   (check-packages)
+   (check-groups)))
 
 (defn strip-email
   [user-id]
@@ -61,16 +83,22 @@
 
 (defn get-user-id
   [package]
-  (some->> (get-in package [:signed-by :user-ids])
-           (map strip-email)
-           (some #(and (not (string/blank? %)) %))
-           (string/trim)))
+  (if-let [signed-by (get package :signed-by)]
+    (some->> (get signed-by :user-ids)
+             (map strip-email)
+             (some #(and (not (string/blank? %)) %))
+             (string/trim))
+    (when-let [signed-by-id (get package :signed-by-id)]
+      (str "key ID " signed-by-id))))
 
 (defn package-table
   [package-status]
   [:table
    (for [package (sort-packages package-status)]
-     [:tr {:style (if (= :untrusted (:status package)) "color: red" "")}
+     [:tr {:style (condp contains? (:status package)
+                    #{:trusted :no-keys-specified} ""
+                    #{:not-signed} "color: darkorange"
+                    "color: red")}
       [:td (:package package)]
       [:td (:version package)]
       [:td (:status package)]
@@ -106,4 +134,5 @@
        [:author
         [:name "varpushaukka"]]]])))
 
-(defn -main [] (println (pprint-atom (check-packages))))
+(defn -main [atom]
+  (println ((if atom pprint-atom pprint-report) (check-all))))

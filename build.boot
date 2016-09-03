@@ -9,4 +9,6 @@
                  [danlentz/clj-uuid "0.1.6"]])
 
 (require 'varpushaukka.report)
-(deftask run [] (with-pass-thru _ (varpushaukka.report/-main)))
+(deftask run
+  [a atom bool "Produce Atom instead of HTML."]
+  (with-pass-thru _ (varpushaukka.report/-main atom)))
