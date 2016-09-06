@@ -84,18 +84,22 @@
 
 (defn get-user-id
   [package]
-  (if-let [signed-by (get package :signed-by)]
+  (when-let [signed-by (get package :signed-by)]
     (some->> (get signed-by :user-ids)
              (map strip-email)
              (some #(and (not (string/blank? %)) %))
-             (string/trim))
-    (when-let [signed-by-id (get package :signed-by-id)]
-      (str "key ID " signed-by-id))))
+             (string/trim))))
+
+(defn get-key-id [package]
+  (some #(get-in package %) [[:signed-by :key-id] [:signed-by-id]]))
+
+(def +key-search-url+ "https://sks-keyservers.net/pks/lookup?op=get&search=0x")
 
 (defn package-table
   [package-status]
   [:table
-   (for [package (sort-packages package-status)]
+   (for [package (sort-packages package-status)
+         :let [key-id (get-key-id package)]]
      [:tr {:style (condp contains? (:status package)
                     #{:trusted :no-keys-specified} ""
                     #{:not-signed} "color: darkorange"
@@ -103,7 +107,8 @@
       [:td (str (:package package))]
       [:td (:version package)]
       [:td (:status package)]
-      [:td (get-user-id package)]])])
+      [:td (get-user-id package)]
+      [:td (when key-id [:a {:href (str +key-search-url+ key-id)} key-id])]])])
 
 (defn pprint-report
   [package-status]
