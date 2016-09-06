@@ -93,7 +93,7 @@
 (defn get-key-id [package]
   (some #(get-in package %) [[:signed-by :key-id] [:signed-by-id]]))
 
-(def +key-search-url+ "https://sks-keyservers.net/pks/lookup?op=get&search=0x")
+(def +key-search-url+ "https://sks-keyservers.net/pks/lookup?op=vindex&search=0x")
 
 (defn package-table
   [package-status]
