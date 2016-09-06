@@ -59,6 +59,7 @@
 (defn check-artifact
   "Check whether the given artifact is signed by a trusted key."
   [artifacts keys]
+  {:pre [(seq artifacts)]}
   (let [[jar-file asc-file] (map (comp :file meta) artifacts)
         keyring (load-keyring)
         key-set (set keys)]
@@ -69,12 +70,16 @@
                            (contains? key-set (pgp/hex-fingerprint master-key))
                            (not (revoked? master-key))
                            (pgp-sig/verify (io/file jar-file) signature pub-key))]
-          ;; XXX(miikka) Status should be :revoked if master-key is revoked.
-          {:status (if trusted :trusted :untrusted) :pub-key master-key})
+          {:status (cond
+                     (revoked? master-key) :revoked
+                     trusted :trusted
+                     :else :untrusted)
+           :pub-key master-key})
         {:status :unknown-key :key-id (pgp/hex-id signature)})
       {:status :broken-signature})))
 
 (defn check-package
   [package keyspec]
-  (-> (get-artifact package)
-      (check-artifact keyspec)))
+  (if-let [artifact (get-artifact package)]
+    (check-artifact artifact keyspec)
+    {:status :unsigned}))
