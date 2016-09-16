@@ -45,6 +45,7 @@
                        (str (some-> (:pub-key result) (pgp/hex-fingerprint)))
                        (str (:key-id result))))))
 
+;; XXX(miikka) Use Specter or something
 (defn map-map-values [f x] (into {} (for [[k v] x] [k (f v)])))
 
 (defn summarize [results]
