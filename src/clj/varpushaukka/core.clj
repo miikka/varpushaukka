@@ -2,12 +2,14 @@
   (:require
    [cemerick.pomegranate.aether :as aether]
    [clojure.string :as string]
+   [clojure.spec :as s]
    [clojure.java.shell :as shell]
    [clojure.java.io :as io]
    [clj-pgp.signature :as pgp-sig]
    [clj-pgp.keyring :as keyring]
    [clj-pgp.core :as pgp])
   (:import
+   org.bouncycastle.openpgp.PGPPublicKey
    org.bouncycastle.openpgp.operator.bc.BcPGPContentVerifierBuilderProvider
    org.sonatype.aether.resolution.ArtifactResolutionException))
 
@@ -78,6 +80,15 @@
         {:status :unknown-key :key-id (pgp/hex-id signature)})
       {:status :broken-signature})))
 
+(s/def ::status #{:unsigned :untrusted :revoked :trusted :broken-signature})
+(s/def ::coordinate (s/tuple symbol? string?))
+(s/def ::keyspec (s/coll-of string?))
+(s/def ::pub-key #(instance? PGPPublicKey %))
+(s/def ::package-status (s/keys :req-un [::status] :opt-un [::pub-key]))
+
+(s/fdef check-package
+        :args (s/cat :package ::coordinate :keyspec ::keyspec)
+        :ret ::package-status)
 (defn check-package
   [package keyspec]
   (if-let [artifact (get-artifact package)]
