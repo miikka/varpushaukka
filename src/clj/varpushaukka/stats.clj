@@ -7,7 +7,8 @@
   (report \"results.txt\" res)"
   (:require [clojure.string :as string]
             [clj-pgp.core :as pgp]
-            [varpushaukka.core :as core]))
+            [varpushaukka.core :as core]
+            [com.rpl.specter :refer [transform MAP-VALS]]))
 
 (defn load-list [path]
   (-> (slurp path)
@@ -45,11 +46,8 @@
                        (str (some-> (:pub-key result) (pgp/hex-fingerprint)))
                        (str (:key-id result))))))
 
-;; XXX(miikka) Use Specter or something
-(defn map-map-values [f x] (into {} (for [[k v] x] [k (f v)])))
-
 (defn summarize [results]
-  {:counts (map-map-values count (group-by :status results))})
+  {:counts (transform MAP-VALS count (group-by :status results))})
 
 (defn unknown-keys [results]
   (set (keep :key-id results)))
