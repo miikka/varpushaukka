@@ -7,7 +7,10 @@
                  [com.rpl/specter "0.13.0"]
                  [mvxcvi/clj-pgp "0.8.3"]
                  [hiccup "1.0.5"]
-                 [danlentz/clj-uuid "0.1.6"]])
+                 [danlentz/clj-uuid "0.1.6"]
+                 [miikka/pinkeys "0.1.0"]])
+
+(require '[miikka.boot-pinkeys :refer [pinkeys]])
 
 (require 'varpushaukka.report)
 (deftask run
