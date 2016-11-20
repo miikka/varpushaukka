@@ -28,7 +28,8 @@
    "mvxcvi/clj-pgp"            :no-key})
 
 (def groups
-  {"metosin" {:group :metosin}})
+  {"metosin" {:group :metosin}
+   "miikka" :miikka})
 
 (defn keys-for-keyspec
   [keyspec]
