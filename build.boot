@@ -7,7 +7,7 @@
                  [com.rpl/specter "0.13.0"]
                  [mvxcvi/clj-pgp "0.8.3"]
                  [hiccup "1.0.5"]
-                 [danlentz/clj-uuid "0.1.6"]
+                 [org.clojars.miikka/clj-uuid "0.1.7-SNAPSHOT"]
                  [miikka/pinkeys "0.1.0"]])
 
 (require '[miikka.boot-pinkeys :refer [pinkeys]])
