@@ -13,10 +13,10 @@
    org.bouncycastle.openpgp.operator.bc.BcPGPContentVerifierBuilderProvider
    org.sonatype.aether.resolution.ArtifactResolutionException))
 
-(def local-repo "m2")
-(def keyring-path (str (System/getProperty "user.home") "/.gnupg/pubring.gpg"))
+(def ^:dynamic *local-repo* "m2")
+(def ^:dynamic *keyring-path* (str (System/getProperty "user.home") "/.gnupg/pubring.gpg"))
 
-(def repositories
+(def ^:dynamic *repositories*
   {"central" "https://repo1.maven.org/maven2/"
    "clojars" "https://clojars.org/repo/"})
 
@@ -25,9 +25,9 @@
   (let [coords-with-asc [coords (concat coords [:extension "jar.asc"])]]
     (try
       (aether/resolve-artifacts :coordinates coords-with-asc
-                                :local-repo local-repo
-                                :repositories repositories)
-      (catch ArtifactResolutionException _
+                                :local-repo *local-repo*
+                                :repositories *repositories*)
+      (catch ArtifactResolutionException e
         nil))))
 
 ;; XXX(miikka) If I understand this correctly, this is comparing 64-bit key IDs,
@@ -54,7 +54,7 @@
           (iterator-seq (.getSignatures key)))))
 
 (defn load-keyring []
-  (keyring/load-public-keyring (io/file keyring-path)))
+  (keyring/load-public-keyring (io/file *keyring-path*)))
 
 (defn revoked? [key] (:revoked? (pgp/key-info key)))
 
