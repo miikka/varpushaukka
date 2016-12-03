@@ -1,10 +1,12 @@
 (ns varpushaukka.report
   (:require [clj-pgp.core :as pgp]
             [clj-time.core :as t]
+            [clojure.spec :as s]
             [hiccup.core :as hiccup]
             [hiccup.page :refer [html5]]
             [varpushaukka.core :as core]
             [varpushaukka.clojars :as clojars]
+            [varpushaukka.observation-store :as store]
             [clojure.string :as string]
             [clj-uuid :as uuid]))
 
@@ -52,12 +54,17 @@
         {:package package :status :not-signed})
       {:package package :status :no-keys-specified})))
 
+(defn check-and-record-coordinates
+  [coordinates keyspec]
+  (doto (check-coordinates coordinates keyspec)
+    (store/record)))
+
 (defn check-group
   [group keyspec]
   (for [package (clojars/get-group-artifacts group)]
     (-> package
         (clojars/package->coordinates)
-        (check-coordinates keyspec))))
+        (check-and-record-coordinates keyspec))))
 
 (defn check-watched-group
   [group]
@@ -67,7 +74,7 @@
 
 (defn check-package
   [package keyspec]
-  (check-coordinates (clojars/get-coordinates package) keyspec))
+  (check-and-record-coordinates (clojars/get-coordinates package) keyspec))
 
 (defn check-packages [] (map (partial apply check-package) packages))
 
@@ -142,4 +149,5 @@
         [:name "varpushaukka"]]]])))
 
 (defn -main [atom]
+  (store/initialize-db)
   (println ((if atom pprint-atom pprint-report) (check-all))))

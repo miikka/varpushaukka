@@ -7,6 +7,9 @@
                  [com.rpl/specter "0.13.0"]
                  [mvxcvi/clj-pgp "0.8.3"]
                  [hiccup "1.0.5"]
+                 [funcool/clojure.jdbc "0.9.0"]
+                 [honeysql "0.8.1"]
+                 [org.xerial/sqlite-jdbc "3.15.1"]
                  [org.clojars.miikka/clj-uuid "0.1.7-SNAPSHOT"]
                  [miikka/pinkeys "0.1.0" :scope "test"]
                  [metosin/boot-alt-test "0.2.1" :scope "test"]])

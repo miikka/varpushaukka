@@ -21,6 +21,7 @@
    "clojars" "https://clojars.org/repo/"})
 
 (s/def ::coordinate (s/tuple symbol? string?))
+(s/def ::pgp-key #(instance? PGPPublicKey %))
 
 (s/fdef get-artifact
         :args (s/cat :coords ::coordinate))
@@ -36,8 +37,12 @@
 
 ;; XXX(miikka) If I understand this correctly, this is comparing 64-bit key IDs,
 ;; which is not secure.
+(s/fdef key= :args (s/cat :key1 ::pgp-key :key2 ::pgp-key) :ret boolean?)
 (defn key= [key1 key2] (= (pgp/key-id key1) (pgp/key-id key2)))
 
+(s/fdef is-sub-key-of?
+        :args (s/cat :sub-key ::pgp-key :master-key ::pgp-key)
+        :ret boolean?)
 (defn is-subkey-of?
   [sub-key master-key]
   (some #(key= % master-key) (iterator-seq (.getSignatures sub-key))))
@@ -87,7 +92,8 @@
 (s/def ::status #{:unsigned :untrusted :revoked :trusted :broken-signature})
 (s/def ::keyspec (s/coll-of string?))
 (s/def ::pub-key #(instance? PGPPublicKey %))
-(s/def ::package-status (s/keys :req-un [::status] :opt-un [::pub-key]))
+(s/def ::key-id string?)
+(s/def ::package-status (s/keys :req-un [::status] :opt-un [::pub-key ::key-id]))
 
 (s/fdef check-package
         :args (s/cat :package ::coordinate :keyspec ::keyspec)
