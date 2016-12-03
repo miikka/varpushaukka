@@ -20,6 +20,10 @@
   {"central" "https://repo1.maven.org/maven2/"
    "clojars" "https://clojars.org/repo/"})
 
+(s/def ::coordinate (s/tuple symbol? string?))
+
+(s/fdef get-artifact
+        :args (s/cat :coords ::coordinate))
 (defn get-artifact
   [coords]
   (let [coords-with-asc [coords (concat coords [:extension "jar.asc"])]]
@@ -81,7 +85,6 @@
       {:status :broken-signature})))
 
 (s/def ::status #{:unsigned :untrusted :revoked :trusted :broken-signature})
-(s/def ::coordinate (s/tuple symbol? string?))
 (s/def ::keyspec (s/coll-of string?))
 (s/def ::pub-key #(instance? PGPPublicKey %))
 (s/def ::package-status (s/keys :req-un [::status] :opt-un [::pub-key]))

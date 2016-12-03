@@ -1,6 +1,9 @@
 (ns varpushaukka.core-test
-  (:require [varpushaukka.core :as core]
-            [clojure.test :refer [deftest is]]))
+  (:require [clojure.test :refer [deftest is use-fixtures]]
+            [varpushaukka.core :as core]
+            [varpushaukka.test-util :refer [instrument-this-ns!]]))
+
+(instrument-this-ns!)
 
 (defn get-local-repo-url []
   (str "file://" (System/getProperty "user.dir") "/test/fixture/repository"))

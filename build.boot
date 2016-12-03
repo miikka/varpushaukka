@@ -1,5 +1,5 @@
 (set-env!
- :resource-paths #{"src/clj"}
+ :resource-paths #{"src/clj" "test/clj"}
  :dependencies '[[org.clojure/clojure "1.9.0-alpha12" :scope "provided"]
                  [clj-http "2.2.0"]
                  [clj-time "0.12.0"]
@@ -8,9 +8,16 @@
                  [mvxcvi/clj-pgp "0.8.3"]
                  [hiccup "1.0.5"]
                  [org.clojars.miikka/clj-uuid "0.1.7-SNAPSHOT"]
-                 [miikka/pinkeys "0.1.0"]])
+                 [miikka/pinkeys "0.1.0" :scope "test"]
+                 [metosin/boot-alt-test "0.2.1" :scope "test"]])
 
-(require '[miikka.boot-pinkeys :refer [pinkeys]])
+(require '[metosin.boot-alt-test :refer [alt-test]]
+         '[miikka.boot-pinkeys :refer [pinkeys]])
+
+(deftask dev []
+  (comp
+   (watch)
+   (alt-test)))
 
 (require 'varpushaukka.report)
 (deftask run
