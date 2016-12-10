@@ -1,6 +1,6 @@
 (set-env!
  :resource-paths #{"src/clj" "test/clj"}
- :dependencies '[[org.clojure/clojure "1.9.0-alpha12" :scope "provided"]
+ :dependencies '[[org.clojure/clojure "1.9.0-alpha14" :scope "provided"]
                  [clj-http "2.2.0"]
                  [clj-time "0.12.0"]
                  [com.cemerick/pomegranate "0.3.1"]
