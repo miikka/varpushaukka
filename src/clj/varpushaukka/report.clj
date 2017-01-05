@@ -20,10 +20,11 @@
    :john "7A3B4BAFCACB8A4A79C6BF760D6F7DAC0EEE5E66"
    :danlentz "2C3F427B0CA72D7DA254B66A5C1BFB40B110BC3D"
    :ztellman "38F1E8B7E2E292D778EF599336A89F3F7E4C9221"
-   :michaelblume "63C3CECD25B41844B2DA62269A5C13A73D896FB6"})
+   :michaelblume "63C3CECD25B41844B2DA62269A5C13A73D896FB6"
+   :tuukka "CB9A22BD6ACE5AB93B7ED258CF9EAFB495E8CD12"})
 
 (def trusted-groups
-  {:metosin #{:miikka :tommi :juho :juho-old :john}
+  {:metosin #{:miikka :tommi :juho :juho-old :john :tuukka}
    :juho #{:juho :juho-old}})
 
 ;; This needs some kind of TOFU mode
