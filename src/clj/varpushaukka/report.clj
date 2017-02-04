@@ -138,6 +138,10 @@
     [:h1 "package signature status report"]
     (package-table package-status)]))
 
+(defn db-report
+  []
+  (pprint-report (store/get-package-status)))
+
 (def feed-id
   "urn:uuid:fd788648-c061-4e26-afb0-3b00279f5a7a")
 

@@ -43,3 +43,25 @@
                         :pubkey    pub-key}])
            (sql/format)
            (jdbc/execute conn)))))
+
+(defn- from-db [data]
+  (-> data
+      ;; drop the colon from the keyword
+      (update :status #(-> % (subs 1) keyword))
+      (update :package symbol)))
+
+(defn get-package-status
+  []
+  (with-conn conn
+    (->> (sql/build :select [:o1.*]
+                    :from [[:observations :o1]]
+                    :join [[(sql/build :select [:package [:%max.timestamp :timestamp]]
+                                       :from [[:observations :o2]]
+                                       :group-by :package)
+                            :o2]
+                           [:and
+                            [:= :o1.package :o2.package]
+                            [:= :o1.timestamp :o2.timestamp]]])
+         (sql/format)
+         (jdbc/fetch conn)
+         (map from-db))))
