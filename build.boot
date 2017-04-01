@@ -17,7 +17,7 @@
                  [ring "1.5.1"]
                  [ring-jetty-component "0.3.1"]
 
-                 [miikka/pinkeys "0.1.0" :scope "test"]
+                 [miikka/pinkeys "0.1.1" :scope "test"]
                  [metosin/boot-alt-test "0.3.0" :scope "test"]])
 
 (require '[metosin.boot-alt-test :refer [alt-test]]
