@@ -5,7 +5,7 @@
                  [clj-http "2.2.0"]
                  [clj-time "0.13.0"]
                  [com.cemerick/pomegranate "0.3.1"]
-                 [com.rpl/specter "0.13.0"]
+                 [com.rpl/specter "1.0.0"]
                  [com.stuartsierra/component "0.3.2"]
                  [compojure "1.5.2"]
                  [funcool/clojure.jdbc "0.9.0"]
