@@ -7,8 +7,8 @@
             [varpushaukka.core :as core]
             [varpushaukka.clojars :as clojars]
             [varpushaukka.observation-store :as store]
-            [clojure.string :as string]
-            [clj-uuid :as uuid]))
+            [clojure.string :as string])
+  (:import java.util.UUID))
 
 (def trusted-keys
   {:miikka "0753C3DA748EDA91AAB1E35E8005E0EBBCB7E306"
@@ -18,7 +18,6 @@
    :juho "5DDBC3343CEC9A95AB0272C9094224808950366D"
    :juho-old "90C64334F2837C72E451E774D75ACF21A58EB7F3"
    :john "7A3B4BAFCACB8A4A79C6BF760D6F7DAC0EEE5E66"
-   :danlentz "2C3F427B0CA72D7DA254B66A5C1BFB40B110BC3D"
    :ztellman "38F1E8B7E2E292D778EF599336A89F3F7E4C9221"
    :michaelblume "63C3CECD25B41844B2DA62269A5C13A73D896FB6"
    :tuukka "CB9A22BD6ACE5AB93B7ED258CF9EAFB495E8CD12"
@@ -32,7 +31,6 @@
 (def packages
   {"clj-http"          :dakrone
    "hiccup"            :weavejester
-   "danlentz/clj-uuid" :danlentz
    "mvxcvi/clj-pgp"    :no-key
    "primitive-math"    :ztellman
    "byte-streams"      :ztellman
@@ -145,6 +143,9 @@
 (def feed-id
   "urn:uuid:fd788648-c061-4e26-afb0-3b00279f5a7a")
 
+(defn- uuid-v4 []
+  (UUID/randomUUID))
+
 (defn pprint-atom
   [package-status]
   (let [now (str (t/now))]
@@ -156,7 +157,7 @@
       [:id feed-id]
       [:entry
        [:title (str "report for " now)]
-       [:id (str "urn:uuid:" (uuid/v4))]
+       [:id (str "urn:uuid:" (uuid-v4))]
        [:updated now]
        [:content {:type "xhtml"}
         [:div {:xmlns "http://www.w3.org/1999/xhtml"}

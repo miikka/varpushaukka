@@ -12,7 +12,6 @@
                  [hiccup "1.0.5"]
                  [honeysql "0.8.2"]
                  [mvxcvi/clj-pgp "0.8.3"]
-                 [org.clojars.miikka/clj-uuid "0.1.7"]
                  [org.xerial/sqlite-jdbc "3.16.1"]
                  [reloaded.repl "0.2.3"]
                  [ring "1.5.1"]
