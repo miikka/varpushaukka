@@ -1,7 +1,7 @@
 (ns varpushaukka.report
   (:require [clj-pgp.core :as pgp]
             [clj-time.core :as t]
-            [clojure.spec :as s]
+            [clojure.spec.alpha :as s]
             [hiccup.core :as hiccup]
             [hiccup.page :refer [html5]]
             [varpushaukka.core :as core]

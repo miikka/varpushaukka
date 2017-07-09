@@ -2,7 +2,7 @@
   "Keeping historical records for the package status measurements."
   (:require
    [clj-pgp.core :as pgp]
-   [clojure.spec :as s]
+   [clojure.spec.alpha :as s]
    [jdbc.core :as jdbc]
    [honeysql.core :as sql])
   (:import

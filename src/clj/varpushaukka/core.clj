@@ -2,7 +2,7 @@
   (:require
    [cemerick.pomegranate.aether :as aether]
    [clojure.string :as string]
-   [clojure.spec :as s]
+   [clojure.spec.alpha :as s]
    [clojure.java.shell :as shell]
    [clojure.java.io :as io]
    [clj-pgp.signature :as pgp-sig]
