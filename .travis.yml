@@ -7,7 +7,7 @@ install:
   - curl -L https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh -o ~/bin/boot
   - chmod +x ~/bin/boot
 env:
-  - BOOT_CLOJURE_VERSION=1.9.0-alpha14
+  - BOOT_CLOJURE_VERSION=1.9.0-alpha17
 jdk:
   - oraclejdk8
 cache:
