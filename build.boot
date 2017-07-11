@@ -30,4 +30,6 @@
 
 (deftask run
   [a atom bool "Produce Atom instead of HTML."]
-  (with-pass-thru _ ((resolve 'varpushaukka.report/-main) atom)))
+  (with-pass-thru _
+    (require 'varpushaukka.report)
+    ((resolve 'varpushaukka.report/-main) atom)))
