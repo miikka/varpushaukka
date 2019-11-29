@@ -10,8 +10,7 @@
    [clj-pgp.core :as pgp])
   (:import
    org.bouncycastle.openpgp.PGPPublicKey
-   org.bouncycastle.openpgp.operator.bc.BcPGPContentVerifierBuilderProvider
-   org.sonatype.aether.resolution.ArtifactResolutionException))
+   org.bouncycastle.openpgp.operator.bc.BcPGPContentVerifierBuilderProvider))
 
 (def ^:dynamic *local-repo* "m2")
 (def ^:dynamic *keyring-path* (str (System/getProperty "user.home") "/.gnupg/pubring.gpg"))
@@ -32,7 +31,8 @@
       (aether/resolve-artifacts :coordinates coords-with-asc
                                 :local-repo *local-repo*
                                 :repositories *repositories*)
-      (catch ArtifactResolutionException e
+      ;; XXX(miikka) Need to figure out the specific exception type here.
+      (catch Exception e
         nil))))
 
 ;; XXX(miikka) If I understand this correctly, this is comparing 64-bit key IDs,
