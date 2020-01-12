@@ -1,6 +1,7 @@
+.cpcache/
 .nrepl-history
 .nrepl-port
-m2/
 data/
+m2/
 target/
 varpushaukka.db
