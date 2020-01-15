@@ -134,6 +134,7 @@
    [:head [:title "package signature status report"]]
    [:body
     [:h1 "package signature status report"]
+    [:strong "This report is incorrect and fixing it is too hard. -Miikka"]
     (package-table package-status)]))
 
 (defn db-report
@@ -161,6 +162,7 @@
        [:updated now]
        [:content {:type "xhtml"}
         [:div {:xmlns "http://www.w3.org/1999/xhtml"}
+         [:strong "This report is incorrect and fixing it is too hard. -Miikka"]
          (package-table package-status)]]
        [:author
         [:name "varpushaukka"]]]])))
